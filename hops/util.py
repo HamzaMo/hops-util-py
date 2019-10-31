@@ -214,6 +214,7 @@ def get_requests_verify(hostname, port):
     return False
 
 
+
 def send_request(method, resource, data=None, headers=None):
     """
     Sends a request to Hopsworks. In case of Unauthorized response, submit the request once more as jwt might not
@@ -227,6 +228,7 @@ def send_request(method, resource, data=None, headers=None):
     Returns:
         HTTP(S) response
     """
+    
     if headers is None:
         headers = {}
     global verify
@@ -234,7 +236,10 @@ def send_request(method, resource, data=None, headers=None):
     if verify is None:
         verify = get_requests_verify(host, port)
     set_auth_header(headers)
-    url = _get_hopsworks_rest_endpoint() + resource
+
+    urlParse = urlparse(urljoin(_get_hopsworks_rest_endpoint(),resource))
+    url = urlParse.geturl()
+    
     req = requests.Request(method, url, data=data, headers=headers)
     prepped = session.prepare_request(req)
 
@@ -244,6 +249,7 @@ def send_request(method, resource, data=None, headers=None):
         set_auth_header(headers)
         prepped = session.prepare_request(req)
         response = session.send(prepped)
+
     return response
 
 
