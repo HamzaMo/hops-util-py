@@ -123,14 +123,12 @@ def get_schema(topic):
         Avro schema as a string object in JSON format
     """
     method = constants.HTTP_CONFIG.HTTP_GET
-    resource_url = constants.DELIMITERS.SLASH_DELIMITER + \
-                   constants.REST_CONFIG.HOPSWORKS_REST_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
-                   constants.REST_CONFIG.HOPSWORKS_PROJECT_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
-                   hdfs.project_id() + constants.DELIMITERS.SLASH_DELIMITER + \
-                   constants.REST_CONFIG.HOPSWORKS_KAFKA_RESOURCE + constants.DELIMITERS.SLASH_DELIMITER + \
-                   topic + constants.DELIMITERS.SLASH_DELIMITER + \
-                   constants.REST_CONFIG.HOPSWORKS_SCHEMA_RESOURCE
-    response = util.send_request(method, resource_url)
+    path = os.path.join(constants.REST_CONFIG.HOPSWORKS_REST_RESOURCE, constants.REST_CONFIG.HOPSWORKS_PROJECT_RESOURCE
+                        ,hdfs.project_id(), constants.REST_CONFIG.HOPSWORKS_KAFKA_RESOURCE,topic,
+                        constants.REST_CONFIG.HOPSWORKS_SCHEMA_RESOURCE)
+    urlParse = urlparse(urljoin(_get_hopsworks_rest_endpoint(),path))
+    resource_url = urlParse.geturl()
+    response = send_request(method, resource_url)
     response_object = response.json()
 
     if response.status_code != 200:
@@ -140,6 +138,7 @@ def get_schema(topic):
             resource_url, response.status_code, response.reason, error_code, error_msg, user_msg))
 
     return response_object
+
 
 
 def parse_avro_msg(msg, avro_schema):
