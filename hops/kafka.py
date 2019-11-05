@@ -50,6 +50,7 @@ Similarly, you can define a pyspark kafka consumer as follows, using the spark s
 
 import os
 from hops import constants, tls, util, hdfs
+from urllib.parse import urlparse, urljoin, urlsplit, urlunsplit
 from hops.exceptions import RestAPIError
 import json
 import sys
